@@ -30,6 +30,7 @@ CREATE TABLE answers (
 );
 COPY answers(id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful) FROM '/Users/tylerjohnson/hackreactor/sdc/answers.csv' DELIMITER ',' CSV HEADER;
 ALTER TABLE answers ALTER COLUMN date_written TYPE date USING to_timestamp(date_written::bigint/1000)::text::date;
+
 CREATE TABLE answers_photos (
   id SERIAL,
   answer_id INTEGER,
@@ -39,8 +40,8 @@ CREATE TABLE answers_photos (
 COPY answers_photos(id, answer_id, url) FROM '/Users/tylerjohnson/hackreactor/sdc/answers_photos.csv' DELIMITER ',' CSV HEADER;
 
 --Query data
--- GET /qa/questions, parameters(product_id, page, count)
 
+-- GET /qa/questions, parameters(product_id, page, count)
 CREATE OR REPLACE FUNCTION getQuestions(product INT, page_num INT, count INT)
 RETURNS TABLE(id INT, product_id INT, body VARCHAR(255), date_written DATE, asker_name VARCHAR(255), asker_email VARCHAR(50), reported INT, helpful INT) AS $$
 BEGIN
@@ -52,3 +53,26 @@ $$ LANGUAGE PLPGSQL;
 
 SELECT * FROM getQuestions(45000, 1, 5);
 -- 793.214 ms
+
+--GET /qa/questions/:question_id/answers
+CREATE OR REPLACE FUNCTION getAnswers(question INT, page_num INT, count INT)
+RETURNS TABLE(id INT, question_id INT, body VARCHAR(255), date_written DATE, answerer_name VARCHAR(255), answerer_email VARCHAR(50), reported INT, helpful INT) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT * FROM answers WHERE answers.question_id = $1
+  ORDER BY answers.id OFFSET $2 ROWS FETCH FIRST $3 ROWS ONLY;
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT * FROM getAnswers(5, 1, 5)
+-- 1899.980 ms
+
+CREATE OR REPLACE FUNCTION getPhotos(answer INT)
+RETURNS TABLE(id INT, answer_id INT, url VARCHAR(255)) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT * FROM answers_photos WHERE answers_photos.answer_id = $1
+  ORDER BY answers_photos.id;
+END;
+$$ LANGUAGE PLPGSQL;
+SELECT * FROM getPhotos(5);
