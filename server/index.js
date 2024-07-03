@@ -2,7 +2,7 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import { getQuestions, getAnswersWithPhotos } from './controllers/questions.js';
+import { getQuestions, getAnswersWithPhotos, postQuestion } from './controllers/questions.js';
 const router = express.Router();
 const app = express();
 
@@ -16,7 +16,9 @@ app.use(express.static(path.join('/Users/tylerjohnson/hackreactor/rfp2404/arrow_
 router.get('/answers', getAnswersWithPhotos);
 app.use('/qa/questions/:question_id', router);
 
+
 router.get('/questions', getQuestions);
+router.post('/questions', postQuestion);
 app.use('/qa', router);
 
 
