@@ -3,11 +3,11 @@ CREATE TABLE questions (
   id SERIAL,
   product_id INTEGER,
   body VARCHAR(255),
-  date_written VARCHAR(14),
+  date_written VARCHAR(14) DEFAULT current_date,
   asker_name VARCHAR(255),
   asker_email VARCHAR(50),
-  reported SMALLINT,
-  helpful SMALLINT,
+  reported SMALLINT DEFAULT 0,
+  helpful SMALLINT DEFAULT 0,
   PRIMARY KEY (id)
 );
 --Load Questions table using .csv files
@@ -21,11 +21,11 @@ CREATE TABLE answers (
   id SERIAL,
   question_id INTEGER,
   body VARCHAR(255),
-  date_written VARCHAR(14),
+  date_written VARCHAR(14) DEFAULT current_date,
   answerer_name VARCHAR(255),
   answerer_email VARCHAR(50),
-  reported SMALLINT,
-  helpful SMALLINT,
+  reported SMALLINT DEFAULT 0,
+  helpful SMALLINT DEFAULT 0,
   PRIMARY KEY (id)
 );
 COPY answers(id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)
@@ -43,7 +43,7 @@ COPY answers_photos(id, answer_id, url)
   FROM '/Users/tylerjohnson/hackreactor/sdc/answers_photos.csv' DELIMITER ',' CSV HEADER;
 CREATE INDEX IF NOT EXISTS answer_photos_idx ON answers_photos(id);
 
---QUERY DATA:
+--INITAL QUERIES:
 
 -- GET /qa/questions, parameters(product_id, page, count)
 CREATE OR REPLACE FUNCTION getQuestions(product INT, page_num INT, count INT)
@@ -55,9 +55,9 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
---Execute
 SELECT * FROM getQuestions(45000, 1, 5);
 -- 7.520 ms
+
 
 -- GET /qa/questions/:question_id/answers
 CREATE OR REPLACE FUNCTION getAnswersWithPhotos(question INT, page_num INT, count INT)
@@ -78,7 +78,7 @@ BEGIN
   ORDER BY answers.id OFFSET ($2-1) ROWS FETCH FIRST $3 ROWS ONLY;
 END;
 $$ LANGUAGE PLPGSQL;
---Execute
+
 SELECT * FROM getAnswersWithPhotos(70,1,5);
 --311.423 ms
 

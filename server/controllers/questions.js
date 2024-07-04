@@ -11,8 +11,9 @@ export async function getQuestions(req, res) {
 
   try {
     const questions = await sql`
-    SELECT * FROM questions WHERE questions.product_id = ${question.product}
-    ORDER BY questions.id
+    SELECT * FROM questions WHERE product_id = ${question.product}
+    AND reported = 0
+    ORDER BY id
     OFFSET ${offset} ROWS
     FETCH FIRST ${question.count} ROWS ONLY;
     `
@@ -30,21 +31,50 @@ export async function postQuestion(req, res) {
     email: req.body.asker_email,
     product_id: req.body.product_id
   }
-  console.log(question)
+
   try {
     await sql`
     INSERT INTO questions (body, asker_name, asker_email, product_id)
     VALUES (${question.body}, ${question.name}, ${question.email}, ${question.product_id});
     `
-    res.status(201).send('Created')
+    res.status(201).send('Created');
   } catch(err) {
-    res.status(500).send('Error posting question')
-    console.error('Error posting question', err)
+    res.status(500).send('Error posting question');
+    console.error('Error posting question', err);
   }
 }
 
+export async function markQuestionHelpful(req, res) {
+  console.log(req.query.question_id)
+  try {
+    await sql`
+      UPDATE questions
+      SET helpful = helpful +1
+      WHERE id = ${req.query.question_id}
+    `
+    res.status(204).send();
+  } catch(err) {
+      res.status(500).send('Error marking question as helpful');
+      console.error('Error marking question as helpful:', err);
+  }
+}
 
-export async function getAnswersWithPhotos(req, res) {
+export async function reportQuestion(req, res) {
+
+  try {
+    await sql`
+      UPDATE questions
+      SET reported = reported +1
+      WHERE id = ${req.query.question_id}
+    `
+    res.status(204).send();
+  } catch(err) {
+      res.status(500).send('Error marking question as reported');
+      console.error('Error marking question as reported:', err);
+  }
+}
+
+export async function getAnswers(req, res) {
   const answer = {
     question_id: req.query.question_id,
     page_num: req.query.page || 1,
@@ -77,4 +107,63 @@ export async function getAnswersWithPhotos(req, res) {
 }
 
 
+export async function postAnswer(req, res) {
+  const answer = {
+    question_id: req.query.question_id,
+    body: req.body.body,
+    name: req.body.answerer_name,
+    email: req.body.answerer_email,
+    photos: req.body.photos
+  }
+  try {
+    const postedAnswer = await (sql`
+      INSERT INTO answers (question_id, body, answerer_name, answerer_email)
+      VALUES (${answer.question_id}, ${answer.body}, ${answer.name}, ${answer.email})
+      RETURNING id;
+      `
+    )
+    console.log(postedAnswer);
+    const answerID = postedAnswer[0].id;
+    if (answer.photos) {
+      for (var photo of answer.photos) {
+          await (sql`
+            INSERT INTO answers_photos (answer_id, url)
+            VALUES (${answerID}, ${photo});
+            `
+          )
+      }
+    }
+    res.status(201).send('Answer posted');
+  } catch(err) {
+    res.status(500).send('Error posting Answer');
+    console.error('Error posting Answer:', err);
+  }
+}
+export async function markAnswerHelpful(req, res) {
+  console.log(req.query.answer_id)
+  try {
+    await sql`
+      UPDATE answers
+      SET helpful = helpful +1
+      WHERE id = ${req.query.answer_id};
+    `
+    res.status(204).send();
+  } catch(err) {
+      res.status(500).send('Error marking answer as helpful');
+      console.error('Error marking answer as helpful:', err);
+  }
+}
+export async function reportAnswer(req, res) {
 
+  try {
+    await sql`
+      UPDATE answers
+      SET reported = reported +1
+      WHERE id = ${req.query.answer_id};
+    `
+    res.status(204).send();
+  } catch(err) {
+      res.status(500).send('Error marking answer as reported');
+      console.error('Error marking answer as reported:', err);
+  }
+}
