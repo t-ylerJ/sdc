@@ -45,7 +45,6 @@ export async function postQuestion(req, res) {
 }
 
 export async function markQuestionHelpful(req, res) {
-  console.log(req.query.question_id)
   try {
     await sql`
       UPDATE questions
@@ -117,30 +116,21 @@ export async function postAnswer(req, res) {
   }
   try {
     const postedAnswer = await (sql`
-      INSERT INTO answers (question_id, body, answerer_name, answerer_email)
-      VALUES (${answer.question_id}, ${answer.body}, ${answer.name}, ${answer.email})
+      INSERT INTO answers (question_id, body, answerer_name, answerer_email, photos)
+      VALUES (${answer.question_id}, ${answer.body}, ${answer.name}, ${answer.email}, ${answer.photos})
       RETURNING id;
       `
     )
-    console.log(postedAnswer);
     const answerID = postedAnswer[0].id;
-    if (answer.photos) {
-      for (var photo of answer.photos) {
-          await (sql`
-            INSERT INTO answers_photos (answer_id, url)
-            VALUES (${answerID}, ${photo});
-            `
-          )
-      }
-    }
+
     res.status(201).send('Answer posted');
   } catch(err) {
     res.status(500).send('Error posting Answer');
     console.error('Error posting Answer:', err);
   }
 }
+
 export async function markAnswerHelpful(req, res) {
-  console.log(req.query.answer_id)
   try {
     await sql`
       UPDATE answers

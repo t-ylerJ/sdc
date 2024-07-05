@@ -4,8 +4,7 @@ import postgres from 'postgres';
     host: 'localhost',
     port: 5432,
     database:'qna',
-    // username: 'postgres',
-    // password: 'qn@D@ta123'
+
   })
 
 

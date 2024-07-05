@@ -34,3 +34,16 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Web server running on: http://localhost:${PORT}`);
 });
+
+
+
+
+
+//post answer:
+//http://localhost:3000/qa/questions/:question_id/answers?question_id=1
+// {
+//   "body": "Est eum rerum mollitia inventore veniam.",
+//   "answerer_name": "Jayce.Romaguera17",
+//   "answerer_email": "first.last@gmail.com",
+//   "photos": ["https://images.unsplash.com/photo-1553830591-2f39e38a013c?ixlib=rb-1.2.1&auto=format&fit=crop&w=2760&q=80", "https://images.unsplash.com/photo-1522032238811-74bc59578599?ixlib=rb-1.2.1&auto=format&fit=crop&w=1567&q=80"]
+// }

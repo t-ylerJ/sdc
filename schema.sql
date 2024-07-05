@@ -43,6 +43,16 @@ COPY answers_photos(id, answer_id, url)
   FROM '/Users/tylerjohnson/hackreactor/sdc/answers_photos.csv' DELIMITER ',' CSV HEADER;
 CREATE INDEX IF NOT EXISTS answer_photos_idx ON answers_photos(id);
 
+--edit: append answers column to contain photos from db for each answer
+ALTER TABLE answers ADD COLUMN photos varchar(255)[] DEFAULT '{}'::varchar(255)[];
+WITH cte_photos AS (
+SELECT array_agg(answers_photos.url) AS photos, answers_photos.answer_id AS answer_id
+FROM answers_photos
+GROUP BY answers_photos.answer_id)
+UPDATE answers
+SET photos = cte_photos.photos
+FROM cte_photos
+WHERE answers.id = cte_photos.answer_id;
 --INITAL QUERIES:
 
 -- GET /qa/questions, parameters(product_id, page, count)
@@ -82,7 +92,8 @@ $$ LANGUAGE PLPGSQL;
 SELECT * FROM getAnswersWithPhotos(70,1,5);
 --311.423 ms
 
-CREATE EXTENSION pg_trgm;
-CREATE EXTENSION btree_gin;
-CREATE INDEX IF NOT EXISTS answer_photos_idx ON answers_photos USING GIN (id::INTEGER);
+
+
+
+
 
