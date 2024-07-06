@@ -12,19 +12,30 @@ app.use(morgan('dev'));
 app.use(express.static(path.join('/Users/tylerjohnson/hackreactor/rfp2404/arrow_sdc/questions/client/public')));
 
 
-router.get('/questions', getQuestions);
-router.post('/questions', postQuestion);
-router.put('questions/:question_id/helpful', markQuestionHelpful);
-router.put('questions/:question_id/report', reportQuestion);
+// router.get('/questions', getQuestions);
+// router.post('/questions', postQuestion);
+// router.put('questions/:question_id/helpful', markQuestionHelpful);
+// router.put('questions/:question_id/report', reportQuestion);
 
-router.get('questions/:question_id/answers', getAnswers);
-router.post('questions/:question_id/answers', postAnswer);
-router.put('/answers/:answer_id/helpful', markAnswerHelpful);
-router.put('/answers/:answer_id/report', reportAnswer);
+// router.get('questions/:question_id/answers', getAnswers);
+// router.post('questions/:question_id/answers', postAnswer);
+// router.put('/answers/:answer_id/helpful', markAnswerHelpful);
+// router.put('/answers/:answer_id/report', reportAnswer);
 
+// app.use('/qa', router);
+
+router.get('/answers', getAnswers);
+router.post('/answers', postAnswer);
+router.put('/helpful', markQuestionHelpful);
+router.put('/report', reportQuestion);
 app.use('/qa/questions/:question_id', router);
 
 
+router.get('/questions', getQuestions);
+router.post('/questions', postQuestion);
+router.put('/answers/:answer_id/helpful', markAnswerHelpful);
+router.put('/answers/:answer_id/report', reportAnswer);
+app.use('/qa', router);
 
 
 
@@ -34,8 +45,11 @@ app.listen(PORT, () => {
 });
 
 
-
-//post answer:
+//Example requests to assist with testing:
+//getQuestions:
+//http://localhost:3000/qa/questions?product_id=998998 //update product_id in query
+//getAnswer:
+//postAnswer:
 //http://localhost:3000/qa/questions/:question_id/answers?question_id=1
 // {
 //   "body": "Est eum rerum mollitia inventore veniam.",

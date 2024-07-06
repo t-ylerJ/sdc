@@ -74,27 +74,18 @@ export async function reportQuestion(req, res) {
 }
 
 export async function getAnswers(req, res) {
+  console.log(req)
   const answer = {
     question_id: req.query.question_id,
     page_num: req.query.page || 1,
     count: req.query.count || 5,
   }
   const offset = (answer.page_num - 1) * answer.count;
-
   try {
     const answers = await sql`
-    SELECT
-    answers.id, answers.question_id, answers.body, answers.date_written, answers.answerer_name, answers.answerer_email, answers.reported, answers.helpful,
-    COALESCE(
-      jsonb_agg(jsonb_build_object(
-        'id', answers_photos.id,
-        'url', answers_photos.url))
-      FILTER (WHERE answers_photos.id IS NOT NULL), '{}') AS photos
+    SELECT *
     FROM answers
-    LEFT JOIN answers_photos ON answers_photos.answer_id = answers.id
     WHERE answers.question_id = ${answer.question_id} AND answers.reported = 0
-    GROUP BY answers.id
-    ORDER BY answers.id
     OFFSET ${offset} ROWS
     FETCH FIRST ${answer.count} ROWS ONLY;
     `
