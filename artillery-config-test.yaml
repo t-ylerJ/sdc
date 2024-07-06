@@ -1,0 +1,24 @@
+config:
+  target: 'http://localhost:3000'
+  processor: './server/controllers/questions.js'
+
+  phases:
+  - duration: 60
+    arrivalRate: 5
+    rampTo: 50
+    name: 'Low traffic'
+  - duration: 60
+    arrivalRate: 10
+    rampTo: 50
+    name: 'High traffic'
+  - duration: 300
+    arrivalRate: 50
+    name: 'Sustained high traffic'
+
+scenarios:
+  - name: 'Get page of questions'
+    flow:
+      #  - loop:
+      - get:
+          url: '/qa/questions'
+          count: 10

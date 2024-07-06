@@ -1,0 +1,7 @@
+{
+  "yaml.schemas": {
+    "https://www.artillery.io/schema.json": [
+      "file:///Users/tylerjohnson/hackreactor/rfp2404/arrow_sdc/questions/artillery-config-test.yaml"
+    ]
+  }
+}
