@@ -8,23 +8,21 @@ const app = express();
 
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(morgan('dev'));
 app.use(express.static(path.join('/Users/tylerjohnson/hackreactor/rfp2404/arrow_sdc/questions/client/public')));
-
-
-
-
-router.get('/answers', getAnswers);
-router.post('/answers', postAnswer);
-router.put('/helpful', markQuestionHelpful);
-router.put('/report', reportQuestion);
-app.use('/qa/questions/:question_id', router);
 
 
 router.get('/questions', getQuestions);
 router.post('/questions', postQuestion);
+router.put('questions/:question_id/helpful', markQuestionHelpful);
+router.put('questions/:question_id/report', reportQuestion);
+
+router.get('questions/:question_id/answers', getAnswers);
+router.post('questions/:question_id/answers', postAnswer);
 router.put('/answers/:answer_id/helpful', markAnswerHelpful);
 router.put('/answers/:answer_id/report', reportAnswer);
-app.use('/qa', router);
+
+app.use('/qa/questions/:question_id', router);
 
 
 
@@ -34,9 +32,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Web server running on: http://localhost:${PORT}`);
 });
-
-
-
 
 
 
