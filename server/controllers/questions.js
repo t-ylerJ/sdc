@@ -25,17 +25,13 @@ export async function getQuestions(req, res) {
 }
 
 export async function postQuestion(req, res) {
-  const question = {
-    body: req.body.body,
-    name: req.body.asker_name,
-    email: req.body.asker_email,
-    product_id: req.body.product_id
-  }
+  const { body, asker_name, asker_email, product_id } = req.body;
+
 
   try {
     await sql`
     INSERT INTO questions (body, asker_name, asker_email, product_id)
-    VALUES (${question.body}, ${question.name}, ${question.email}, ${question.product_id});
+    VALUES (${body}, ${name}, ${email}, ${product_id});
     `
     res.status(201).send('Created');
   } catch(err) {
@@ -74,7 +70,7 @@ export async function reportQuestion(req, res) {
 }
 
 export async function getAnswers(req, res) {
-  console.log(req)
+
   const answer = {
     question_id: req.query.question_id,
     page_num: req.query.page || 1,
@@ -98,17 +94,13 @@ export async function getAnswers(req, res) {
 
 
 export async function postAnswer(req, res) {
-  const answer = {
-    question_id: req.query.question_id,
-    body: req.body.body,
-    name: req.body.answerer_name,
-    email: req.body.answerer_email,
-    photos: req.body.photos
-  }
+  const { question_id } = req.query;
+  const { body, name, email, photos } = req.body;
+
   try {
     const postedAnswer = await (sql`
       INSERT INTO answers (question_id, body, answerer_name, answerer_email, photos)
-      VALUES (${answer.question_id}, ${answer.body}, ${answer.name}, ${answer.email}, ${answer.photos})
+      VALUES (${question_id}, ${body}, ${name}, ${email}, ${photos})
       RETURNING id;
       `
     )

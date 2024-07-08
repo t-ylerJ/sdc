@@ -4,15 +4,11 @@ config:
 
   phases:
   - duration: 60
-    arrivalRate: 5
-    rampTo: 50
-    name: 'Low traffic'
-  - duration: 60
-    arrivalRate: 10
-    rampTo: 50
-    name: 'High traffic'
+    arrivalRate: 20
+    rampTo: 100
+    name: 'Ramp up to high traffic'
   - duration: 300
-    arrivalRate: 50
+    arrivalRate: 100
     name: 'Sustained high traffic'
 
 scenarios:

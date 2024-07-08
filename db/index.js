@@ -1,4 +1,4 @@
-import postgres from 'postgres';
+import postgres from 'postgres';//Postgres.js
 
   const sql = postgres({
     host: 'localhost',
