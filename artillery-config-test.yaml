@@ -3,13 +3,17 @@ config:
   processor: './artillery-processor.cjs'
 
   phases:
-  - duration: 60
-    arrivalRate: 20
-    rampTo: 100
-    name: 'Ramp up to high traffic'
-  - duration: 300
+  - duration: 240
     arrivalRate: 100
+    rampTo: 200
+    name: 'Ramp up to high traffic'
+  - duration: 360
+    arrivalRate: 200
     name: 'Sustained high traffic'
+  - duration: 240
+    arrivalRate: 200
+    rampTo: 0
+    name: 'Ramp down from high traffic'
 
 scenarios:
   - name: 'Get page of questions'
